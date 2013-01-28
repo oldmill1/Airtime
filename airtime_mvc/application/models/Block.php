@@ -1266,6 +1266,7 @@ SQL;
 
         $qry = CcFilesQuery::create();
         $qry->useFkOwnerQuery("subj", "left join");
+        $qry->useCcMusicDirsQuery("dir", "left join");
 
         if (isset($storedCrit["crit"])) {
             foreach ($storedCrit["crit"] as $crit) {
@@ -1311,8 +1312,6 @@ SQL;
                         $spCriteriaModifier = "starts with";
                         $spCriteria = $spCriteria.'::text';
                         $spCriteriaValue = $criteria['value'];
-                    //} elseif ($spCriteria == 'filepath') {
-                        
                     } else {
                         /* Propel does not escape special characters properly when using LIKE/ILIKE
                          * We have to add extra slashes in these cases
@@ -1344,6 +1343,8 @@ SQL;
                     try {
                         if ($spCriteria == "owner_id") {
                             $spCriteria = "subj.login";
+                        } elseif ($spCritiera == "filepath") {
+                            $spCriteria = "(dir.directory || filepath)";
                         }
                         if ($i > 0) {
                             $qry->addOr($spCriteria, $spCriteriaValue, $spCriteriaModifier);
@@ -1365,6 +1366,7 @@ SQL;
             $qry->add("file_exists", "true", Criteria::EQUAL);
             $qry->add("hidden", "false", Criteria::EQUAL);
             $qry->addAscendingOrderByColumn('random()');
+            Logging::info($qry->toString());
         }
         // construct limit restriction
         $limits = array();

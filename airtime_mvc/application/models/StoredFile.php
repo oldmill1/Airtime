@@ -645,7 +645,7 @@ SQL;
         "track_number", "mood", "bpm", "composer", "info_url",
         "bit_rate", "sample_rate", "isrc_number", "encoded_by", "label",
         "copyright", "mime", "language", "filepath", "owner_id",
-        "conductor", "replay_gain", "lptime" );
+        "conductor", "replay_gain", "lptime", "directory" );
     }
 
     public static function searchLibraryFiles($datatables)
@@ -687,6 +687,11 @@ SQL;
                 $blSelect[]     = "login AS ".$key;
                 $fileSelect[]   = "sub.login AS $key";
                 $streamSelect[] = "login AS ".$key;
+            } elseif ($key === "directory") {
+                $plSelect[]     = "NULL::VARCHAR AS ".$key;
+                $blSelect[]     = "NULL::VARCHAR AS ".$key;
+                $fileSelect[]   = "dir.directory AS $key";
+                $streamSelect[] = "NULL::VARCHAR AS ".$key;
             } elseif ($key === "replay_gain") {
                 $plSelect[]     = "NULL::NUMERIC AS ".$key;
                 $blSelect[]     = "NULL::NUMERIC AS ".$key;
@@ -743,7 +748,7 @@ SQL;
 
         $plTable = "({$plSelect} FROM cc_playlist AS PL LEFT JOIN cc_subjs AS sub ON (sub.id = PL.creator_id))";
         $blTable = "({$blSelect} FROM cc_block AS BL LEFT JOIN cc_subjs AS sub ON (sub.id = BL.creator_id))";
-        $fileTable = "({$fileSelect} FROM cc_files AS FILES LEFT JOIN cc_subjs AS sub ON (sub.id = FILES.owner_id) WHERE file_exists = 'TRUE' AND hidden='FALSE')";
+        $fileTable = "({$fileSelect} FROM cc_files AS FILES LEFT JOIN cc_subjs AS sub ON (sub.id = FILES.owner_id) LEFT JOIN cc_music_dirs AS dir ON (dir.id = FILES.directory) WHERE file_exists = 'TRUE' AND hidden='FALSE')";
         //$fileTable = "({$fileSelect} FROM cc_files AS FILES WHERE file_exists = 'TRUE')";
         $streamTable = "({$streamSelect} FROM cc_webstream AS ws LEFT JOIN cc_subjs AS sub ON (sub.id = ws.creator_id))";
         $unionTable = "({$plTable} UNION {$blTable} UNION {$fileTable} UNION {$streamTable}) AS RESULTS";
@@ -775,6 +780,8 @@ SQL;
         //Used by the audio preview functionality in the library.
         foreach ($results['aaData'] as &$row) {
             $row['id'] = intval($row['id']);
+
+            $row['filepath'] = $row['directory'].$row['filepath'];
 
             $formatter = new LengthFormatter($row['length']);
             $row['length'] = $formatter->format();

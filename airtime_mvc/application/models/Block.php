@@ -64,6 +64,7 @@ class Application_Model_Block implements Application_Model_LibraryEditable
             "conductor"    => "DbConductor",
             "copyright"    => "DbCopyright",
             "encoded_by"   => "DbEncodedBy",
+            "filepath"     => "DbFilepath",
             "utime"        => "DbUtime",
             "mtime"        => "DbMtime",
             "lptime"       => "DbLPtime",
@@ -1215,6 +1216,7 @@ SQL;
             "copyright"    => _("Copyright"),
             "artist_name"  => _("Creator"),
             "encoded_by"   => _("Encoded By"),
+            "filepath"     => _("File Path"),
             "genre"        => _("Genre"),
             "isrc_number"  => _("ISRC"),
             "label"        => _("Label"),
@@ -1309,6 +1311,8 @@ SQL;
                         $spCriteriaModifier = "starts with";
                         $spCriteria = $spCriteria.'::text';
                         $spCriteriaValue = $criteria['value'];
+                    //} elseif ($spCriteria == 'filepath') {
+                        
                     } else {
                         /* Propel does not escape special characters properly when using LIKE/ILIKE
                          * We have to add extra slashes in these cases

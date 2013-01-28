@@ -571,6 +571,7 @@ var criteriaTypes = {
     "copyright"    : "s",
     "artist_name"  : "s",
     "encoded_by"   : "s",
+    "filepath"     : "s",
     "utime"        : "n",
     "mtime"        : "n",
     "lptime"       : "n",

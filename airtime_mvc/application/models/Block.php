@@ -1267,6 +1267,7 @@ SQL;
         $qry = CcFilesQuery::create();
         $qry->useFkOwnerQuery("subj", "left join");
         $qry->useCcMusicDirsQuery("dir", "left join");
+        //$qry->addJoin(array(CcFilesPeer::OWNER_ID, CcMusicDirsPeer::ID), array(CcSubjsPeer::ID, CcFilesPeer::DIRECTORY) );
 
         if (isset($storedCrit["crit"])) {
             foreach ($storedCrit["crit"] as $crit) {
@@ -1275,7 +1276,6 @@ SQL;
                     //$spCriteriaPhpName = self::$criteria2PeerMap[$criteria['criteria']];
                     $spCriteria = $criteria['criteria'];
                     $spCriteriaModifier = $criteria['modifier'];
-
                     $column = CcFilesPeer::getTableMap()->getColumnByPhpName(self::$criteria2PeerMap[$spCriteria]);
                     // if the column is timestamp, convert it into UTC
                     if ($column->getType() == PropelColumnTypes::TIMESTAMP) {
@@ -1343,15 +1343,14 @@ SQL;
                     try {
                         if ($spCriteria == "owner_id") {
                             $spCriteria = "subj.login";
-                        } elseif ($spCritiera == "filepath") {
-                            $spCriteria = "(dir.directory || filepath)";
+                        } elseif ($spCriteria == "filepath") {
+                            //$spCriteria = "(cc_music_dirs.directory || filepath)";
                         }
                         if ($i > 0) {
                             $qry->addOr($spCriteria, $spCriteriaValue, $spCriteriaModifier);
                         } else {
                             $qry->add($spCriteria, $spCriteriaValue, $spCriteriaModifier);
                         }
-                        
                         if ($spCriteriaModifier == Criteria::NOT_ILIKE || $spCriteriaModifier == Criteria::NOT_EQUAL) {
                             $qry->addOr($spCriteria, null, Criteria::ISNULL);
                         }
